@@ -4,7 +4,7 @@ import {checkArguments, sendError} from "./helpers.js";
 export async function topCommand({cache, Models}, args, {channelId, id}) {
 
     const isValid = checkArguments(args, {
-        requiredArgs: 0,
+        requiredArgs: 1,
         validValues: [['points', 'streaks']],
         defaultValues: ['points']
     }, channelId, id)
