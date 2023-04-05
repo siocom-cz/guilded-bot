@@ -1,4 +1,5 @@
 import {it, describe, expect, vi} from "vitest";
+import {checkArguments} from './commands/helpers.js'
 
 
 vi.mock('./requests', (original) => {
@@ -16,7 +17,44 @@ vi.mock('ws', (original) => {
 })
 
 describe('helpers', async () => {
-    it('Test the checkArguments function with various argument inputs, valid values, and default values.', () => {
+    describe('checkArguments', () => {
+        it('Test default values', () => {
+            const args = []
+            const isValid = checkArguments(args, {
+                defaultValues: ['test'],
+                requiredArgs: 1,
+                validValues: [['test']],
+            }, "", "")
+
+            expect(isValid).toBe(true);
+            expect(args[0]).toEqual('test')
+        })
+
+        it('Test valid values', () => {
+            const isValid = checkArguments(['test'], {
+                defaultValues: [],
+                requiredArgs: 1,
+                validValues: [['test']],
+            }, "", "")
+            expect(isValid).toBe(true);
+        })
+
+        it('Test invalid values', () => {
+            const isValid = checkArguments(['pokemon'], {
+                defaultValues: [],
+                requiredArgs: 1,
+                validValues: [['test']],
+            }, "", "")
+            expect(isValid).toBe(false);
+        })
+        it('Test insufficient arguments', () => {
+            const isValid = checkArguments(['test'], {
+                defaultValues: [],
+                requiredArgs: 2,
+                validValues: [],
+            }, "", "")
+            expect(isValid).toBe(false);
+        })
     })
     it('Test if the sendError function sends an error message to the specified channel.', () => {
     })

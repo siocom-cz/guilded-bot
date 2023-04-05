@@ -29,6 +29,14 @@ export const Colors = {
 export function checkArguments(args, options, channelId, id) {
     const { requiredArgs, validValues, defaultValues } = options;
 
+    if (defaultValues) {
+        for (let i = 0; i < defaultValues.length; i++) {
+            if (!args[i]) {
+                args[i] = defaultValues[i];
+            }
+        }
+    }
+
     if (args.length < requiredArgs) {
         void sendSuccess(`Příkaz vyžaduje minimálně ${requiredArgs} argument${requiredArgs > 1 ? "y" : ""}!`, 'Ups!', channelId, id, {color: Colors.RED});
         return false;
@@ -39,14 +47,6 @@ export function checkArguments(args, options, channelId, id) {
             if (validValues[i] && !validValues[i].includes(args[i]) && validValues[i] !== null) {
                 void sendSuccess(`Neplatná hodnota pro argument ${i + 1}: "${args[i]}". Povolené hodnoty: ${validValues[i].join(", ")}`, 'Ups!', channelId, id, {color: Colors.RED});
                 return false;
-            }
-        }
-    }
-
-    if (defaultValues) {
-        for (let i = 0; i < defaultValues.length; i++) {
-            if (!args[i]) {
-                args[i] = defaultValues[i];
             }
         }
     }
