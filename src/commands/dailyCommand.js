@@ -1,10 +1,16 @@
 import {Colors, sendError, sendSuccess} from "./helpers.js";
 
-export async function dailyCommand({Models, cache}, args, {createdBy, channelId, id}) {
-    try {
-        const user = await Models.User.findByIdOrCreate(createdBy, {id: createdBy})
+const Admins = {
+    sionzee: 'AQ1RBy3A'
+}
 
-        if (!user.canObtainDailyStreak()) {
+export async function dailyCommand({Models, cache}, args, {createdBy, channelId, id}) {
+    const force = createdBy === Admins.sionzee && args[0]
+
+    try {
+        let user = await Models.User.findByIdOrCreate(createdBy, {id: createdBy})
+
+        if (!force && !user.canObtainDailyStreak()) {
             const dailyAt = new Date(user.dailyStreakAt)
             let timeFormat = dailyAt.toLocaleTimeString('cs-CZ')
             timeFormat = timeFormat.slice(0, timeFormat.lastIndexOf(":"))
@@ -16,6 +22,11 @@ export async function dailyCommand({Models, cache}, args, {createdBy, channelId,
                 {color: Colors.RED}
             )
             return;
+        }
+
+        if(force) {
+            createdBy = args[0];
+            user = await Models.User.findByIdOrCreate(createdBy, {id: createdBy})
         }
 
         const streak = user.getDailyStreak()
