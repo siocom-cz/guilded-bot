@@ -24,10 +24,8 @@ export default (database) => {
         },
         canObtainDailyStreak() {
             if(!this.dailyStreakAt) return true
-            const tomorrow = new Date(this.dailyStreakAt)
-            tomorrow.setDate(tomorrow.getDate() + 1)
-            const today = new Date()
-            return tomorrow.getDate() === today.getDate() && tomorrow.getMonth() === today.getMonth() && tomorrow.getFullYear() === tomorrow.getFullYear()
+            const dailyAt = new Date(this.dailyStreakAt), today = new Date()
+            return dailyAt.toDateString() !== today.toDateString()
         },
         setDailyStreak(streak) {
             return users.updateOne({id: this.id}, {
