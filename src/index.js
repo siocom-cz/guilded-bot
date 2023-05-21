@@ -19,12 +19,17 @@ const cache = {
 };
 
 const initializeServer = () => {
+    console.log("Initializing socket server...")
     const socket = new WebSocket(wsUrl, {...options});
 
     socket.on('open', () => {
         console.log('Connected to Guilded Server');
         void sendSuccess(`Bot je nyní připojen a připraven k použití.`, 'Bot zapnut', CHANNELS["#prikazy"])
     });
+
+    socket.on("error", (e) => {
+        console.error("Error during socket:", e)
+    })
 
     socket.on('message', async (data) => {
         const json = JSON.parse(data);
