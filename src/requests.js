@@ -7,6 +7,9 @@ export const options = {
         Accept: 'application/json',
     },
 };
+if(!process.env.TOKEN) {
+    throw new Error("Token not found in ENV.")
+}
 
 const ggApi = 'https://www.guilded.gg/api';
 export const request = async (url, opts, exponentialBackOff = 1) => {
