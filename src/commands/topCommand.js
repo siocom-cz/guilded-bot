@@ -36,21 +36,27 @@ export async function topCommand({cache, Models}, args, {channelId, id}) {
         promises.push(new Promise(async resolve => {
             try {
                 const data = await request(`/v1/servers/${cache.serverId}/members/${user.id}`, {
-                method: 'GET',
+                    method: 'GET',
                 })
+
+                if(data.code == 'NotFound') {
+                    console.warn(`Unable to fetch member '${user.id}': ${data.message}`)
+                    return resolve(null);
+                }
+                
                 resolve({
                     name: data.member.user.name,
                     balance: user.balance ?? 0,
                     streak: user.maxDailyStreak ?? 0
                 })
             } catch (e) {
-              console.warn(`Unable to fetch member '${user.id}': ${e.data?.message ?? e.message}`)
+              console.warn(`Unable to fetch member '${user.id}':`, e)
             }
         }))
     })
 
     try {
-        const result = await Promise.all(promises);
+        const result = (await Promise.all(promises)).filter(result => result !== null);
         result.sort((a, b) => type === 'points' ? (b.balance - a.balance) : (b.streak - a.streak));
 
         const title = type === "points" ? "TOP 10 - Body" : "TOP 10 - Nejdelší streaky";
