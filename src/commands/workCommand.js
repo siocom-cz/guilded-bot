@@ -1,16 +1,25 @@
 import {Colors, sendError, sendSuccess} from "./helpers.js";
 
+const Admins = {
+    sionzee: 'AQ1RBy3A'
+}
+
 export async function workCommand({Models, cache}, args, {createdBy, channelId, id}) {
+    const force = createdBy === Admins.sionzee && args[0]
+
     try {
+       if(force) {
+          createdBy = args[0];
+       }
         const user = await Models.User.findByIdOrCreate(createdBy, {id: createdBy})
-        if (user.canWork()) {
+        if (user.canWork() || force) {
             const points = Math.floor(Math.random() * (300 - 90 + 1) + 90);
             const xp = Math.floor(Math.random() * (25 - 2 + 1) + 2);
             user.work()
             await user.giveXp(xp, cache.serverId)
             await user.givePoints(points);
             void sendSuccess(
-                `Dostal jsi ${points} bodů a ${xp} xp! Přijď zase za hodinu pro další odměnu.`,
+                `${force ? createdBy + ' dostal' : 'Dostal jsi' } ${points} bodů a ${xp} xp! Přijď zase za hodinu pro další odměnu.`,
                 `Super!`,
                 channelId,
                 id
