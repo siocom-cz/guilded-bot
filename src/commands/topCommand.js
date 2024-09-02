@@ -34,14 +34,18 @@ export async function topCommand({cache, Models}, args, {channelId, id}) {
     const promises = []
     await cursor.forEach((user) => {
         promises.push(new Promise(async resolve => {
-            const data = await request(`/v1/servers/${cache.serverId}/members/${user.id}`, {
+            try {
+                const data = await request(`/v1/servers/${cache.serverId}/members/${user.id}`, {
                 method: 'GET',
-            })
-            resolve({
-                name: data.member.user.name,
-                balance: user.balance ?? 0,
-                streak: user.maxDailyStreak ?? 0
-            })
+                })
+                resolve({
+                    name: data.member.user.name,
+                    balance: user.balance ?? 0,
+                    streak: user.maxDailyStreak ?? 0
+                })
+            } catch (e) {
+              console.warn(`Unable to fetch member '${user.id}': ${e.data?.message ?? e.message}`)
+            }
         }))
     })
 
